@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiDU Learn n Play CMS</title>
+    <!-- Tailwind CSS (CDN for prototype) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Flatpickr for Date Formatting (DD/MM/YYYY) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Google Fonts: Nunito (Friendly for Kids/Education) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafc; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        /* Navigation / Page Transition */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Radio Image styling for Kuis */
+        .radio-img-label {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .radio-img-input:checked + .radio-img-label {
+            border-color: #3b82f6; /* Blue border */
+            background-color: #eff6ff; /* Light blue bg */
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+        }
+        .radio-img-input:checked + .radio-img-label .check-indicator {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-gray-50 overflow-hidden">
+    
+    <!-- 1. Sidebar (Kiri - Fixed, bg-blue-900) -->
+    <aside class="w-64 bg-blue-900 flex flex-col text-white fixed h-full z-20 shadow-xl">
+        <!-- Logo -->
+        <div class="p-6 mb-2 flex flex-col items-center justify-center">
+            <img src="assets/Logo%20Sidu.png" alt="SiDU Logo" class="w-24 md:w-32 object-contain drop-shadow-md">
+        </div>
+        
+        <!-- Navigation Menu -->
+        <nav class="flex-1 px-4 space-y-2 overflow-y-auto" id="sidebar-menu">
+            <a href="#" data-target="dashboard" class="nav-link active flex items-center px-4 py-3.5 bg-blue-800 text-white rounded-xl transition-all shadow-sm">
+                <i class="fas fa-home w-8 text-center text-lg"></i> 
+                <span class="font-bold">Dashboard</span>
+            </a>
+            <a href="#" data-target="topik" class="nav-link flex items-center px-4 py-3.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-book w-8 text-center text-lg"></i> 
+                <span class="font-bold">Manajemen Topik</span>
+            </a>
+            <a href="#" data-target="kuis" class="nav-link flex items-center px-4 py-3.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-puzzle-piece w-8 text-center text-lg"></i> 
+                <span class="font-bold">Manajemen Kuis</span>
+            </a>
+            <a href="#" data-target="akun-siswa" class="nav-link flex items-center px-4 py-3.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-user-graduate w-8 text-center text-lg"></i> 
+                <span class="font-bold">Manajemen Akun</span>
+            </a>
+            <a href="#" data-target="leaderboard" class="nav-link flex items-center px-4 py-3.5 text-blue-200 hover:bg-blue-800 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-trophy w-8 text-center text-lg"></i> 
+                <span class="font-bold">Leaderboard</span>
+            </a>
+        </nav>
+        
+        <!-- Logout Button -->
+        <div class="p-5 mt-auto">
+            <button onclick="window.location.href='login.html'" class="w-full flex items-center justify-center px-4 py-3.5 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors font-bold shadow-md">
+                <i class="fas fa-sign-out-alt mr-2"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- 2. Main Content (Kanan - Flex-1) -->
+    <main class="flex-1 ml-64 flex flex-col h-full relative">
+        <!-- Header -->
+        <header class="h-20 bg-white shadow-sm flex items-center justify-between px-8 z-10 sticky top-0 border-b border-gray-100">
+            <h2 id="page-title" class="text-2xl font-extrabold text-gray-800">Dashboard</h2>
+            
+            <div class="flex items-center gap-4 p-2 rounded-xl">
+                <div class="w-11 h-11 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-blue-600 font-extrabold text-lg shadow-sm">
+                    A
+                </div>
+                <div>
+                    <p class="font-extrabold text-gray-800 leading-tight">Halo, Admin</p>
+                    <p class="text-xs text-gray-500 font-bold">Administrator Utama</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <div class="flex-1 overflow-y-auto p-8 bg-gray-50 pb-20">
+            
+            <!-- ============================================== -->
+            <!-- PAGE 1: Dashboard                              -->
+            <!-- ============================================== -->
+            <section id="page-dashboard" class="page-section active">
+                <!-- 4 Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transform transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 text-3xl shadow-inner">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wider">Pemain Aktif</p>
+                            <h3 class="text-3xl font-black text-gray-800">1,245</h3>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transform transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center text-green-600 text-3xl shadow-inner">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wider">Total Topik</p>
+                            <h3 class="text-3xl font-black text-gray-800">24</h3>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transform transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 text-3xl shadow-inner">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wider">Total Kuis</p>
+                            <h3 class="text-3xl font-black text-gray-800">320</h3>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transform transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="w-16 h-16 rounded-2xl bg-yellow-100 flex items-center justify-center text-yellow-600 text-3xl shadow-inner">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wider">Kuis Harian</p>
+                            <h3 class="text-3xl font-black text-gray-800">15</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aktivitas Terbaru Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+                        <i class="fas fa-history text-blue-500 text-lg"></i>
+                        <h3 class="text-lg font-extrabold text-gray-800">Aktivitas Terbaru</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-extrabold">Waktu</th>
+                                    <th class="px-6 py-4 font-extrabold">Aktivitas</th>
+                                    <th class="px-6 py-4 font-extrabold">Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 divide-y divide-gray-100">
+                                <tr class="hover:bg-blue-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-400">10:30 WIB</td>
+                                    <td class="px-6 py-4 font-semibold text-gray-600">Menambahkan soal kuis baru di topik <b class="text-gray-800">Tata Surya</b></td>
+                                    <td class="px-6 py-4 font-bold text-gray-500">29/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-400">09:15 WIB</td>
+                                    <td class="px-6 py-4 font-semibold text-gray-600">Mengubah status topik <b class="text-gray-800">Hewan Mamalia</b> menjadi Aktif</td>
+                                    <td class="px-6 py-4 font-bold text-gray-500">29/09/2026</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-400">16:45 WIB</td>
+                                    <td class="px-6 py-4 font-semibold text-gray-600">Membuat Kuis Harian untuk tanggal <b class="text-gray-800">30/09/2026</b></td>
+                                    <td class="px-6 py-4 font-bold text-gray-500">28/09/2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE 2: Manajemen Topik                        -->
+            <!-- ============================================== -->
+            <section id="page-topik" class="page-section">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h3 class="text-xl font-extrabold text-gray-800">Daftar Topik Pembelajaran</h3>
+                        <div class="flex gap-2">
+                            <button onclick="toggleModal('modal-batch-topik')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-5 py-3 rounded-xl font-bold transition flex items-center gap-2 border border-indigo-200">
+                                <i class="fas fa-layer-group"></i> Batch Create
+                            </button>
+                            <button onclick="openTopikModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-md shadow-blue-200 transition flex items-center gap-2">
+                                <i class="fas fa-plus-circle"></i> Tambah Topik
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Section for Topik -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <select id="filter-kategori-topik" onchange="renderTopik()" class="w-full md:w-64 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm">
+                            <option value="">Semua Kategori</option>
+                            <option value="Science">Science (Sains)</option>
+                            <option value="Technology">Technology (Teknologi)</option>
+                            <option value="Engineering">Engineering (Teknik)</option>
+                            <option value="Mathematics">Mathematics (Matematika)</option>
+                        </select>
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-topik" oninput="renderTopik()" placeholder="Cari subtopik atau ID..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                        </div>
+                        <select id="limit-topik" onchange="renderTopik()" class="w-full md:w-32 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm cursor-pointer">
+                            <option value="5">5 Baris</option>
+                            <option value="10" selected>10 Baris</option>
+                            <option value="25">25 Baris</option>
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-extrabold rounded-tl-xl th-sort-topik cursor-pointer hover:bg-gray-200 transition" id="th-topik-id" onclick="handleSort('topik', 'id')">ID <i class="fas fa-sort-up text-blue-500 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold">Topik (STEM)</th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-topik cursor-pointer hover:bg-gray-200 transition" id="th-topik-subtopik" onclick="handleSort('topik', 'subtopik')">Subtopik <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-topik cursor-pointer hover:bg-gray-200 transition" id="th-topik-bulan" onclick="handleSort('topik', 'bulan')">Bulan Aktif <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold">Status</th>
+                                    <th class="px-6 py-4 font-extrabold text-center rounded-tr-xl">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topik-table-body" class="text-gray-700 divide-y divide-gray-100">
+                                <!-- Data render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE 3: Manajemen Kuis (Prioritas Utama)       -->
+            <!-- ============================================== -->
+            <!-- ============================================== -->
+            <!-- PAGE 3: Manajemen Kuis (Prioritas Utama)       -->
+            <!-- ============================================== -->
+            <section id="page-kuis" class="page-section">
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <button onclick="openAddKuis()" class="bg-white hover:bg-blue-50 border-2 border-blue-100 rounded-2xl p-6 shadow-sm transition transform hover:-translate-y-1 text-left flex items-center gap-5">
+                        <div class="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 text-3xl shadow-inner">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-gray-800">Buat Kuis Baru</h3>
+                            <p class="text-sm text-gray-500 font-bold mt-1">Tambah pertanyaan kuis pilihan ganda</p>
+                        </div>
+                    </button>
+                    
+                    <button onclick="openAddKuisHarian()" class="bg-white hover:bg-green-50 border-2 border-green-100 rounded-2xl p-6 shadow-sm transition transform hover:-translate-y-1 text-left flex items-center gap-5">
+                        <div class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center text-green-600 text-3xl shadow-inner">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-gray-800">Kuis Matematika Harian</h3>
+                            <p class="text-sm text-gray-500 font-bold mt-1">Atur soal berhitung harian (auto-generate)</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Registered Quizzes Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-xl font-extrabold text-gray-800 mb-6 border-b pb-4 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600"><i class="fas fa-list"></i></div>
+                        Daftar Kuis Terdaftar
+                    </h3>
+                    
+                    <!-- Filter Section for Kuis -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <select id="filter-kategori-kuis" onchange="renderKuis()" class="w-full md:w-64 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm">
+                            <option value="">Semua Kategori</option>
+                            <option value="Science">Science (Sains)</option>
+                            <option value="Technology">Technology (Teknologi)</option>
+                            <option value="Engineering">Engineering (Teknik)</option>
+                            <option value="Mathematics">Mathematics (Matematika)</option>
+                        </select>
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-kuis" oninput="renderKuis()" placeholder="Cari subtopik, pertanyaan, atau ID..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                        </div>
+                        <select id="limit-kuis" onchange="renderKuis()" class="w-full md:w-32 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm cursor-pointer">
+                            <option value="5">5 Baris</option>
+                            <option value="10" selected>10 Baris</option>
+                            <option value="25">25 Baris</option>
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-extrabold rounded-tl-xl w-20 th-sort-kuis cursor-pointer hover:bg-gray-200 transition" id="th-kuis-id" onclick="handleSort('kuis', 'id')">ID <i class="fas fa-sort-up text-blue-500 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold w-36 th-sort-kuis cursor-pointer hover:bg-gray-200 transition" id="th-kuis-kategori" onclick="handleSort('kuis', 'kategori')">Kategori <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold w-48 th-sort-kuis cursor-pointer hover:bg-gray-200 transition" id="th-kuis-subtopik" onclick="handleSort('kuis', 'subtopik')">Subtopik <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold">Pertanyaan</th>
+                                    <th class="px-6 py-4 font-extrabold text-center rounded-tr-xl w-32">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kuis-table-body" class="text-gray-700 divide-y divide-gray-100">
+                                <!-- Data render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Daftar Kuis Harian Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4 gap-4">
+                        <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><i class="fas fa-calendar-alt"></i></div>
+                            Riwayat Kuis Matematika Harian
+                        </h3>
+                    </div>
+                    
+                    <!-- Filter Section for Kuis Harian -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="flex items-center gap-2 w-full md:w-1/3">
+                            <div class="relative flex-1">
+                                <i class="fas fa-calendar-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="filter-tanggal-kuis-harian" onchange="renderKuisHarian()" class="datepicker w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition" placeholder="Filter tanggal...">
+                            </div>
+                            <button type="button" onclick="const fp = document.getElementById('filter-tanggal-kuis-harian')._flatpickr; if(fp) fp.clear(); document.getElementById('filter-tanggal-kuis-harian').value=''; renderKuisHarian();" class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-3 rounded-xl font-bold transition" title="Hapus Filter Tanggal"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-kuis-harian" oninput="renderKuisHarian()" placeholder="Cari ID Kuis Harian..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                        </div>
+                        <select id="limit-kuisHarian" onchange="renderKuisHarian()" class="w-full md:w-32 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm cursor-pointer">
+                            <option value="5">5 Baris</option>
+                            <option value="10" selected>10 Baris</option>
+                            <option value="25">25 Baris</option>
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-extrabold rounded-tl-xl w-24 th-sort-kuisHarian cursor-pointer hover:bg-gray-200 transition" id="th-kuisHarian-id" onclick="handleSort('kuisHarian', 'id')">ID <i class="fas fa-sort-down text-blue-500 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-kuisHarian cursor-pointer hover:bg-gray-200 transition" id="th-kuisHarian-tanggal" onclick="handleSort('kuisHarian', 'tanggal')">Tanggal Kuis <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-kuisHarian cursor-pointer hover:bg-gray-200 transition" id="th-kuisHarian-jumlahSoal" onclick="handleSort('kuisHarian', 'jumlahSoal')">Jumlah Soal <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold text-center rounded-tr-xl w-32">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kuis-harian-table-body" class="text-gray-700 divide-y divide-gray-100">
+                                <!-- Data render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE 3.5: Tambah Kuis                          -->
+            <!-- ============================================== -->
+            <section id="page-kuis-tambah" class="page-section">
+                <div class="mb-6">
+                    <button type="button" onclick="navigateToPage('kuis', 'Manajemen Kuis')" class="text-gray-500 hover:text-blue-600 font-bold transition flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Manajemen Kuis
+                    </button>
+                </div>
+                <form id="form-manajemen-kuis" onsubmit="event.preventDefault(); saveKuis();">
+                    <input type="hidden" id="kuis-id">
+                    <!-- Form Filter Section -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                        <h3 class="text-xl font-extrabold text-gray-800 mb-6 border-b pb-4 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600"><i class="fas fa-filter"></i></div>
+                            Filter & Target Kuis
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-extrabold text-gray-700 mb-2">Kategori Topik</label>
+                                <select id="kuis-kategori" onchange="updateSubtopikKuis()" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-bold transition cursor-pointer" required>
+                                    <option value="" disabled selected>-- Pilih Topik Pembelajaran --</option>
+                                    <option value="Science">Science</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-extrabold text-gray-700 mb-2">Sub-Topik / Materi Spesifik</label>
+                                <select id="kuis-subtopik" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-bold transition cursor-pointer" required disabled>
+                                    <option value="" disabled selected>-- Pilih Kategori Topik Terlebih Dahulu --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Input Section -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-xl font-extrabold text-gray-800 mb-6 border-b pb-4 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600"><i class="fas fa-edit"></i></div>
+                            Detail Pertanyaan & Jawaban
+                        </h3>
+                        
+                        <!-- Text Question -->
+                        <div class="mb-8">
+                            <label class="block text-sm font-extrabold text-gray-700 mb-2">Teks Pertanyaan</label>
+                            <textarea id="kuis-pertanyaan" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-4 px-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-bold transition text-lg resize-none" rows="3" placeholder="Ketik kalimat pertanyaan kuis di sini..." required></textarea>
+                        </div>
+
+                        <!-- Answers Section (Image Based & Radio Buttons) -->
+                        <div class="mb-6 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                            <div class="mb-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b pb-4">
+                                <div>
+                                    <label class="block text-base font-extrabold text-gray-800" id="label-opsi-jawaban">Opsi Jawaban (Unggah Gambar)</label>
+                                    <p class="text-sm text-gray-500 font-bold mt-1"><i class="fas fa-info-circle text-blue-500 mr-1"></i>Klik lingkaran pada opsi untuk menentukan 1 jawaban yang benar.</p>
+                                </div>
+                                <div class="flex bg-gray-100 p-1.5 rounded-xl">
+                                    <button type="button" onclick="setAnswerType('image')" id="btn-ans-img" class="px-5 py-2.5 rounded-lg font-extrabold text-sm bg-white shadow-sm text-blue-700 transition">Gambar</button>
+                                    <button type="button" onclick="setAnswerType('text')" id="btn-ans-text" class="px-5 py-2.5 rounded-lg font-extrabold text-sm text-gray-500 hover:text-gray-700 transition">Teks</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 2x2 Grid for Options -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Option A -->
+                                <div class="relative">
+                                    <input type="radio" name="kunci_jawaban" id="opt_a" value="A" class="hidden radio-img-input" required>
+                                    <label for="opt_a" class="radio-img-label block border-2 border-gray-200 bg-white rounded-2xl p-5 hover:border-blue-300">
+                                        <div class="flex items-center justify-between mb-4 border-b pb-3 border-gray-100">
+                                            <span class="bg-blue-100 text-blue-700 font-black w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">A</span>
+                                            <div class="w-7 h-7 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50 check-indicator transition-colors">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ans-img-container text-center">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase text-left">Unggah Gambar Opsi A:</label>
+                                            <div class="mb-3 w-full min-h-32 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                                                <img id="preview-img-a" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Preview A" class="max-w-full max-h-64 object-contain">
+                                            </div>
+                                            <input type="file" onchange="previewImage(event, 'preview-img-a')" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-extrabold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                        </div>
+                                        <div class="ans-txt-container hidden">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase">Teks Opsi A:</label>
+                                            <input type="text" placeholder="Ketik jawaban..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Option B -->
+                                <div class="relative">
+                                    <input type="radio" name="kunci_jawaban" id="opt_b" value="B" class="hidden radio-img-input">
+                                    <label for="opt_b" class="radio-img-label block border-2 border-gray-200 bg-white rounded-2xl p-5 hover:border-blue-300">
+                                        <div class="flex items-center justify-between mb-4 border-b pb-3 border-gray-100">
+                                            <span class="bg-blue-100 text-blue-700 font-black w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">B</span>
+                                            <div class="w-7 h-7 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50 check-indicator transition-colors">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ans-img-container text-center">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase text-left">Unggah Gambar Opsi B:</label>
+                                            <div class="mb-3 w-full min-h-32 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                                                <img id="preview-img-b" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Preview B" class="max-w-full max-h-64 object-contain">
+                                            </div>
+                                            <input type="file" onchange="previewImage(event, 'preview-img-b')" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-extrabold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                        </div>
+                                        <div class="ans-txt-container hidden">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase">Teks Opsi B:</label>
+                                            <input type="text" placeholder="Ketik jawaban..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Option C -->
+                                <div class="relative">
+                                    <input type="radio" name="kunci_jawaban" id="opt_c" value="C" class="hidden radio-img-input">
+                                    <label for="opt_c" class="radio-img-label block border-2 border-gray-200 bg-white rounded-2xl p-5 hover:border-blue-300">
+                                        <div class="flex items-center justify-between mb-4 border-b pb-3 border-gray-100">
+                                            <span class="bg-blue-100 text-blue-700 font-black w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">C</span>
+                                            <div class="w-7 h-7 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50 check-indicator transition-colors">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ans-img-container text-center">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase text-left">Unggah Gambar Opsi C:</label>
+                                            <div class="mb-3 w-full min-h-32 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                                                <img id="preview-img-c" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Preview C" class="max-w-full max-h-64 object-contain">
+                                            </div>
+                                            <input type="file" onchange="previewImage(event, 'preview-img-c')" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-extrabold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                        </div>
+                                        <div class="ans-txt-container hidden">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase">Teks Opsi C:</label>
+                                            <input type="text" placeholder="Ketik jawaban..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Option D -->
+                                <div class="relative">
+                                    <input type="radio" name="kunci_jawaban" id="opt_d" value="D" class="hidden radio-img-input">
+                                    <label for="opt_d" class="radio-img-label block border-2 border-gray-200 bg-white rounded-2xl p-5 hover:border-blue-300">
+                                        <div class="flex items-center justify-between mb-4 border-b pb-3 border-gray-100">
+                                            <span class="bg-blue-100 text-blue-700 font-black w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">D</span>
+                                            <div class="w-7 h-7 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-50 check-indicator transition-colors">
+                                                <i class="fas fa-check text-white text-sm"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ans-img-container text-center">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase text-left">Unggah Gambar Opsi D:</label>
+                                            <div class="mb-3 w-full min-h-32 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                                                <img id="preview-img-d" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Preview D" class="max-w-full max-h-64 object-contain">
+                                            </div>
+                                            <input type="file" onchange="previewImage(event, 'preview-img-d')" accept="image/*" class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-extrabold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                        </div>
+                                        <div class="ans-txt-container hidden">
+                                            <label class="text-xs font-bold text-gray-500 block mb-2 uppercase">Teks Opsi D:</label>
+                                            <input type="text" placeholder="Ketik jawaban..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end mt-8 pt-4">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-extrabold text-lg shadow-xl shadow-blue-200 transition transform hover:-translate-y-1 flex items-center gap-3">
+                                <i class="fas fa-save text-xl"></i> Simpan Soal Kuis
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE 4: Kuis Harian                            -->
+            <!-- ============================================== -->
+            <section id="page-kuis-harian" class="page-section">
+                <div class="mb-6">
+                    <button type="button" onclick="navigateToPage('kuis', 'Manajemen Kuis')" class="text-gray-500 hover:text-blue-600 font-bold transition flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Manajemen Kuis
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><i class="fas fa-calculator"></i></div>
+                            Input Soal Matematika Harian
+                        </h3>
+                    </div>
+
+                    <form id="form-kuis-harian" onsubmit="event.preventDefault(); saveKuisHarian();">
+                        <input type="hidden" id="kuis-harian-id">
+                        <!-- Date Picker -->
+                        <div class="mb-8 p-5 bg-blue-50 rounded-2xl border border-blue-100 w-full md:w-1/2">
+                            <label class="block text-sm font-extrabold text-blue-900 mb-2">Tentukan Tanggal Kuis Harian</label>
+                            <div class="relative">
+                                <i class="fas fa-calendar-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500"></i>
+                                <input type="text" class="datepicker w-full bg-white border border-gray-200 text-gray-700 py-3.5 pl-12 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition shadow-sm" placeholder="Pilih Tanggal (Hari/Bulan/Tahun)" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <label class="block text-lg font-extrabold text-gray-800">Daftar Soal Angka</label>
+                            </div>
+                            
+                            <!-- Dynamic Row Container -->
+                            <div id="dynamic-form-container" class="space-y-4">
+                                <!-- Row 1 -->
+                                <div class="row-kuis-harian flex flex-col md:flex-row items-end gap-3 bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm transition-all">
+                                    <div class="flex-1 w-full">
+                                        <label class="text-xs font-black text-gray-500 uppercase tracking-wider block mb-2">Soal #1</label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="number" min="0" max="100" step="0.01" oninput="calculateAnswer(this)" placeholder="0 - 100" class="num1 w-full bg-white border border-gray-200 text-gray-800 py-3 px-3 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 text-center shadow-sm" required>
+                                            <select onchange="calculateAnswer(this)" class="operator w-20 md:w-24 flex-shrink-0 bg-white border border-gray-200 text-blue-600 py-3 px-2 rounded-xl font-black focus:outline-none focus:ring-2 focus:ring-blue-500 text-center cursor-pointer text-xl shadow-sm" style="appearance:none;-webkit-appearance:none;text-align-last:center;" required>
+                                                <option value="+">+</option>
+                                                <option value="-">-</option>
+                                                <option value="*">×</option>
+                                                <option value="/">÷</option>
+                                            </select>
+                                            <input type="number" min="0" max="100" step="0.01" oninput="calculateAnswer(this)" placeholder="0 - 100" class="num2 w-full bg-white border border-gray-200 text-gray-800 py-3 px-3 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 text-center shadow-sm" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="font-black text-gray-300 text-3xl hidden md:block mb-3 px-2">=</div>
+                                    
+                                    <div class="w-full md:w-1/4">
+                                        <label class="text-xs font-black text-gray-500 uppercase tracking-wider block mb-2">Kunci Jawaban</label>
+                                        <input type="number" placeholder="Otomatis" class="answer-box w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-black focus:outline-none text-center shadow-inner cursor-not-allowed" readonly required>
+                                    </div>
+                                    
+                                    <div class="pb-0 w-full md:w-auto text-right mt-4 md:mt-0">
+                                        <button type="button" class="text-gray-400 hover:text-red-500 bg-white border border-gray-200 p-3 rounded-xl transition cursor-not-allowed opacity-50 shadow-sm" title="Baris pertama tidak bisa dihapus" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Row / Generate Buttons -->
+                        <div class="mb-10 flex flex-wrap gap-3">
+                            <button type="button" onclick="addDailyQuizRow()" class="text-blue-700 bg-blue-100 hover:bg-blue-200 border border-blue-200 px-5 py-3 rounded-xl font-extrabold text-sm transition flex items-center gap-2 shadow-sm">
+                                <i class="fas fa-plus-circle text-lg"></i> Tambah Baris Soal
+                            </button>
+                            <button type="button" onclick="autoGenerateQuiz()" class="text-purple-700 bg-purple-100 hover:bg-purple-200 border border-purple-200 px-5 py-3 rounded-xl font-extrabold text-sm transition flex items-center gap-2 shadow-sm">
+                                <i class="fas fa-magic text-lg"></i> Auto-Generate
+                            </button>
+                        </div>
+
+                        <div class="flex justify-end border-t pt-6">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-2xl font-extrabold text-lg shadow-xl shadow-green-200 transition transform hover:-translate-y-1 flex items-center gap-3">
+                                <i class="fas fa-paper-plane text-xl"></i> Simpan Kuis Harian
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE: Manajemen Akun Siswa                     -->
+            <!-- ============================================== -->
+            <section id="page-akun-siswa" class="page-section">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600"><i class="fas fa-users"></i></div>
+                            Daftar Akun Siswa
+                        </h3>
+                        <button onclick="openStudentModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-md shadow-indigo-200 transition flex items-center gap-2">
+                            <i class="fas fa-user-plus"></i> Tambah Siswa Baru
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-4 mb-6">
+                        <select id="filter-kelas" onchange="renderStudents()" class="w-full md:w-48 bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                            <option value="">Semua Kelas</option>
+                            <option value="4">Kelas 4 SD</option>
+                            <option value="5">Kelas 5 SD</option>
+                            <option value="6">Kelas 6 SD</option>
+                        </select>
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-siswa" oninput="renderStudents()" placeholder="Cari nama atau ID siswa..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition">
+                        </div>
+                        <select id="limit-siswa" onchange="renderStudents()" class="w-full md:w-32 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm cursor-pointer">
+                            <option value="5">5 Baris</option>
+                            <option value="10" selected>10 Baris</option>
+                            <option value="25">25 Baris</option>
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-extrabold rounded-tl-xl th-sort-siswa cursor-pointer hover:bg-gray-200 transition" id="th-siswa-id" onclick="handleSort('siswa', 'id')">ID Siswa <i class="fas fa-sort-up text-blue-500 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-siswa cursor-pointer hover:bg-gray-200 transition" id="th-siswa-nama" onclick="handleSort('siswa', 'nama')">Nama Lengkap <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold th-sort-siswa cursor-pointer hover:bg-gray-200 transition" id="th-siswa-kelas" onclick="handleSort('siswa', 'kelas')">Kelas <i class="fas fa-sort text-gray-300 ml-1"></i></th>
+                                    <th class="px-6 py-4 font-extrabold">J.K.</th>
+                                    <th class="px-6 py-4 font-extrabold">Tgl Lahir</th>
+                                    <th class="px-6 py-4 font-extrabold">Daerah</th>
+                                    <th class="px-6 py-4 font-extrabold text-center">Status</th>
+                                    <th class="px-6 py-4 font-extrabold text-center rounded-tr-xl">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body" class="text-gray-700 divide-y divide-gray-100">
+                                <!-- Data render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================== -->
+            <!-- PAGE 5: Leaderboard                            -->
+            <!-- ============================================== -->
+            <section id="page-leaderboard" class="page-section">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <!-- Filters -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+                        <h3 class="text-xl font-extrabold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-medal text-yellow-500 text-2xl"></i> Papan Peringkat Siswa
+                        </h3>
+                        <div class="flex gap-4 w-full md:w-auto">
+                            <select id="filter-leaderboard-kelas" onchange="renderLeaderboard()" class="flex-1 md:w-48 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm">
+                                <option value="">Semua Kelas</option>
+                                <option value="4">Kelas 4 SD</option>
+                                <option value="5">Kelas 5 SD</option>
+                                <option value="6">Kelas 6 SD</option>
+                            </select>
+                            <select class="flex-1 md:w-48 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold shadow-sm">
+                                <option value="09">Bulan: September</option>
+                                <option value="10">Bulan: Oktober</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-blue-50 text-blue-900 text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-5 font-black rounded-tl-2xl text-center w-24">Rank</th>
+                                    <th class="px-6 py-5 font-black">Nama Pemain</th>
+                                    <th class="px-6 py-5 font-black text-center">Skor Total</th>
+                                    <th class="px-6 py-5 font-black text-center rounded-tr-2xl">Rincian S-T-E-M</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-table-body" class="text-gray-700 divide-y divide-gray-100">
+                                <!-- Data render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Form: Batch Create Topik -->
+    <div id="modal-batch-topik" class="fixed inset-0 bg-blue-900 bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center transition-all p-4">
+        <div class="bg-white rounded-3xl w-full max-w-3xl p-8 shadow-2xl transform transition-all border-4 border-white max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b pb-4 border-gray-100">
+                <h3 class="text-2xl font-black text-gray-800 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-layer-group"></i></div>
+                    Batch Create Topik
+                </h3>
+                <button onclick="toggleModal('modal-batch-topik')" class="text-gray-400 hover:text-red-500 transition text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-50">&times;</button>
+            </div>
+            
+            <form id="form-batch-topik" onsubmit="event.preventDefault(); saveBatchTopik();">
+                <div class="mb-5">
+                    <div class="flex justify-between items-end mb-2">
+                        <div>
+                            <label class="block text-sm font-extrabold text-gray-700">Paste Data Bulk (CSV/Text)</label>
+                            <p class="text-xs text-gray-500 mt-1 font-semibold">Format per baris: Kategori(S/T/E/M) | Subtopik | YYYY-MM</p>
+                        </div>
+                        <label class="cursor-pointer bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2 border border-green-200">
+                            <i class="fas fa-file-excel"></i> Import CSV
+                            <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+                        </label>
+                    </div>
+                    <textarea id="batch-textarea" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm transition h-48" placeholder="S | Kehidupan Mamalia | 2026-11&#10;T | Dasar Robotika | 2026-11&#10;E | Membangun Jembatan | 2026-11&#10;M | Pecahan Desimal | 2026-11" required></textarea>
+                </div>
+                
+                <div class="mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                    <p class="text-xs text-blue-800 font-semibold leading-relaxed">
+                        Sistem akan membaca setiap baris secara otomatis dan memasukkannya ke dalam tabel topik dengan status "Draft".
+                    </p>
+                </div>
+                
+                <div class="flex justify-end gap-4 mt-4">
+                    <button type="button" onclick="toggleModal('modal-batch-topik')" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-extrabold transition">Batalkan</button>
+                    <button type="submit" class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-extrabold shadow-lg shadow-indigo-200 transition flex items-center gap-2">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Batch Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Form: Tambah Topik Baru -->
+    <div id="modal-topik" class="fixed inset-0 bg-blue-900 bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center transition-all">
+        <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl transform transition-all border-4 border-white">
+            <div class="flex justify-between items-center mb-6 border-b pb-4 border-gray-100">
+                <h3 class="text-2xl font-black text-gray-800 flex items-center gap-3">
+                    <span id="modal-topik-title">Topik Baru</span>
+                </h3>
+                <button onclick="toggleModal('modal-topik')" class="text-gray-400 hover:text-red-500 transition text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-50">&times;</button>
+            </div>
+            
+            <form id="form-topik" onsubmit="event.preventDefault(); saveTopik();">
+                <input type="hidden" id="topik-id">
+                <div class="mb-5">
+                    <label class="block text-sm font-extrabold text-gray-700 mb-2">Kategori Topik (STEM)</label>
+                    <select id="topik-kategori" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                        <option value="" disabled selected>-- Pilih Topik --</option>
+                        <option value="Science">Science (Sains)</option>
+                        <option value="Technology">Technology (Teknologi)</option>
+                        <option value="Engineering">Engineering (Teknik)</option>
+                        <option value="Mathematics">Mathematics (Matematika)</option>
+                    </select>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-extrabold text-gray-700 mb-2">Subtopik</label>
+                    <input type="text" id="topik-subtopik" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition" placeholder="Contoh: Belajar Pecahan" required>
+                </div>
+                
+                <div class="mb-5">
+                    <label class="block text-sm font-extrabold text-gray-700 mb-2">Bulan & Tahun Aktif</label>
+                    <input type="month" id="topik-bulan" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                </div>
+                
+                <div class="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700">Status Topik</label>
+                        <p class="text-xs text-gray-500 font-semibold mt-1">Aktifkan agar langsung muncul di aplikasi</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="topik-status" class="sr-only peer" checked>
+                        <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+                    </label>
+                </div>
+                
+                <div class="flex justify-end gap-4 mt-4">
+                    <button type="button" onclick="toggleModal('modal-topik')" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-extrabold transition">Batalkan</button>
+                    <button type="submit" class="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-extrabold shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                        <i class="fas fa-save"></i> Simpan Topik
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Form: Tambah/Edit Akun Siswa -->
+    <div id="modal-siswa" class="fixed inset-0 bg-blue-900 bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center transition-all">
+        <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl transform transition-all border-4 border-white">
+            <div class="flex justify-between items-center mb-6 border-b pb-4 border-gray-100">
+                <h3 class="text-2xl font-black text-gray-800 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-user-plus"></i></div>
+                    <span id="modal-siswa-title">Tambah Siswa Baru</span>
+                </h3>
+                <button onclick="toggleModal('modal-siswa')" class="text-gray-400 hover:text-red-500 transition text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-50">&times;</button>
+            </div>
+            
+            <form id="form-siswa" onsubmit="event.preventDefault(); saveStudent();">
+                <input type="hidden" id="siswa-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Nama Lengkap</label>
+                        <input type="text" id="siswa-nama" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition" placeholder="Nama Siswa" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Kelas</label>
+                        <select id="siswa-kelas" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                            <option value="4">Kelas 4 SD</option>
+                            <option value="5">Kelas 5 SD</option>
+                            <option value="6">Kelas 6 SD</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Jenis Kelamin</label>
+                        <select id="siswa-jenis-kelamin" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                            <option value="" disabled selected>-- Pilih --</option>
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Tanggal Lahir</label>
+                        <input type="text" id="siswa-tanggal-lahir" class="datepicker w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition" placeholder="Pilih Tanggal (DD/MM/YYYY)" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Provinsi</label>
+                        <select id="siswa-provinsi" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                            <option value="" disabled selected>-- Pilih Provinsi --</option>
+                            <option value="Jawa Barat">Jawa Barat</option>
+                            <option value="Jawa Tengah">Jawa Tengah</option>
+                            <option value="Dki Jakarta">Dki Jakarta</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700 mb-2">Kota/Kabupaten</label>
+                        <select id="siswa-kota" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold transition cursor-pointer" required>
+                            <option value="" disabled selected>-- Pilih Kota/Kabupaten --</option>
+                            <option value="Kota Bekasi">Kota Bekasi</option>
+                            <option value="Kota Semarang">Kota Semarang</option>
+                            <option value="Kota Jakarta Selatan">Kota Jakarta Selatan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-extrabold text-gray-700">Status Akun</label>
+                        <p class="text-xs text-gray-500 font-semibold mt-1">Siswa aktif dapat login dan bermain</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="siswa-status" class="sr-only peer" checked>
+                        <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+                    </label>
+                </div>
+                
+                <div class="flex justify-end gap-4 mt-4">
+                    <button type="button" onclick="toggleModal('modal-siswa')" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-extrabold transition">Batalkan</button>
+                    <button type="submit" class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-extrabold shadow-lg shadow-indigo-200 transition flex items-center gap-2">
+                        <i class="fas fa-save"></i> Simpan Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- External JavaScript Application Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

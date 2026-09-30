@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SiDU Learn n Play CMS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Nunito -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#1a3673] to-[#162b65] min-h-screen flex items-center justify-center p-4">
+
+    <!-- Login Card -->
+    <div class="bg-white w-full max-w-[400px] rounded-[2rem] shadow-2xl relative overflow-hidden">
+        
+        <!-- Logo & Title Header -->
+        <div class="bg-[#1e3a8a] flex flex-col items-center justify-center pt-12 pb-10 px-6 rounded-b-[2rem] border-b-4 border-yellow-400 relative z-10">
+            <img src="assets/Logo%20Sidu.png" alt="SiDU Logo" class="h-16 object-contain drop-shadow-md mb-4" onerror="this.src='https://via.placeholder.com/150x60?text=SiDU+Logo'">
+            <h1 class="text-2xl font-black text-white tracking-wide text-center">
+                Portal Admin
+            </h1>
+            <p class="text-xs font-bold text-gray-200 mt-2 text-center">Masuk untuk mengelola konten edukasi</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="p-8 pb-6">
+            <form onsubmit="event.preventDefault(); window.location.href='index.html';">
+                
+                <!-- Username Input -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-gray-700 mb-2">Username / Email</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" placeholder="admin_sidu" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-bold text-sm transition" value="admin_sidu">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-700 mb-2">Kata Sandi</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 text-gray-800 py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white font-bold text-sm transition" value="password123">
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer" checked>
+                            <span class="text-xs font-bold text-gray-600">Ingat Saya</span>
+                        </label>
+                        <a href="#" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition">Lupa sandi?</a>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full bg-[#2563eb] hover:bg-blue-700 text-white py-3.5 rounded-xl font-extrabold text-sm shadow-lg shadow-blue-500/40 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-2">
+                    <i class="fas fa-sign-in-alt"></i> Masuk ke Sistem
+                </button>
+                
+            </form>
+            
+            <!-- Footer Info -->
+            <div class="mt-8 text-center">
+                <p class="text-[10px] font-bold text-gray-400">
+                    &copy; 2026 SiDU Learn n Play. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
